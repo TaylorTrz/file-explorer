@@ -25,28 +25,7 @@ public class DoubleKiller {
 
     private Map<String, List<File>> duplicateFiles = new HashMap<>();
 
-    // 初始启动动画
-    public void progressDialog() {
-        StringBuilder mode = new StringBuilder("\b\b");
-        StringBuilder progress = new StringBuilder();
-        for (int i = 0; i < 100; i++) {
-            progress.append("-");
-            mode.append("\b");
-        }
-        System.out.print("[" + progress.toString() + "]");
-        try {
-            for (int i = 0; i < 100; i++) {
-                Thread.sleep(i);
-                progress.replace(i, i + 1, ">");
-                System.out.print(mode.toString() + "[" + progress.toString() + "]");
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            e.printStackTrace();
-        }
 
-        System.out.println("\n" + "START SUCCESS!");
-    }
 
 
     /**
@@ -106,7 +85,6 @@ public class DoubleKiller {
     public static void main(String[] args) {
         try {
             DoubleKiller killer = new DoubleKiller();
-            killer.progressDialog();
             long begin = System.currentTimeMillis();
             System.out.println(LocalDateTime.now().toString());
             killer.showDuplicated(ROOT_FILE);
