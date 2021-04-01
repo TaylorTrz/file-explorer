@@ -7,16 +7,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 /**
- * <p>DoubleKiller-重复文件删除工具</p>
- * <p>
- * 功能：删除重复文件
+ * *****************************************************************
+ *                       double killer
+ * 重复文件删除工具
  * 1. 显示待删除文件的位置与超链接
  * 2. 显示待删除文件的总个数与总占用空间
  * 3. 注意内存消耗
+ * -----------------------------------------------------------------
  *
- * @author taoruizhe
- * @date 2020/04/09
+ * @author taoruizhe100@163.com
+ * @version 2020.04.09 v1.0
+ * *****************************************************************
  */
 public class DoubleKiller {
     private static final File ROOT_FILE = new File(File.listRoots()[0].toString());

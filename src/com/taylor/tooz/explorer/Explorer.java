@@ -1,53 +1,108 @@
 package com.taylor.tooz.explorer;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.function.Predicate;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static com.taylor.tooz.utils.HierarchyUtil.*;
+
 
 /**
- * @description 工具类：文件浏览器
- * 获取指定路径下的所有文件，并将指定文件添加到输出流。
+ * *****************************************************************
+ *                         file explorer
+ * recurseLookUp: 获取当前目录所有文件信息
+ * -----------------------------------------------------------------
+ *
+ * @author taoruizhe100@163.com
+ * @version 2021.03.31 v1.0
+ * *****************************************************************
  */
-
 public class Explorer {
-    private static String filePath = File.listRoots()[1].getPath();
+    public static final ConcurrentHashMap<String, Object> recordMap = new ConcurrentHashMap<>();
+    private static final String RECORD_FILE = "recordFile";
+    private static final String RECORD_DIR = "recordDir";
+    private static final String filePath = File.listRoots()[1].getPath();
+    public static OutputStream LOG_FILE;
 
-    /**
-     * 递归获取所有文件
-     *
-     * @param filePath
-     * @return
-     */
-    public static void getChildFiles(File filePath, String tag) {
-        System.out.println(tag + "-" + filePath.getName());
 
-        // length() && isDirectory()
+    static {
         try {
-            if (filePath.isDirectory()) {
-                File[] childFiles = filePath.listFiles();
-                for (File childFile : childFiles) {
-                    getChildFiles(childFile, tag + "|");
-                }
-            }
+            LOG_FILE = new FileOutputStream(filePath + "/tmp");
         } catch (Throwable e) {
-            System.out.println("deny to access! " + e);
+            e.printStackTrace();
         }
 
     }
 
 
+
     /**
-     * 获取目录下所有文件信息，并存入Map
+     * 获取文件树
+     *
+     * @param filePath
+     * @return
+     */
+    public void listFileTree(String filePath) {
+        System.out.println("tree " + filePath + " running on " + System.getProperty("os.name"));
+        String fileSepartor = Optional.ofNullable(System.getProperty("file.separator")).orElse("\\");
+        listSubFiles(new File(filePath), "");
+        System.out.println("\n" + recordMap.get(RECORD_DIR) + " directories, " + recordMap.get(RECORD_FILE) + " files");
+    }
+
+
+    private void listSubFiles(File file, String tag) {
+        try {
+            LOG_FILE.write((tag + file.getName() + "\n").getBytes());
+        } catch (Throwable e) {
+            System.out.println("error");
+            return;
+        }
+
+
+        // 记录文件与文件夹个数
+        if (!file.isDirectory()) {
+            int fileRecord = (int) Optional.ofNullable(recordMap.get(RECORD_FILE)).orElse(0);
+            recordMap.put(RECORD_FILE, ++fileRecord);
+            return;
+        }
+        int dirRecord = (int) Optional.ofNullable(recordMap.get(RECORD_DIR)).orElse(0);
+        recordMap.put(RECORD_DIR, ++dirRecord);
+
+        try {
+            File[] childFiles = file.listFiles();
+            if (childFiles == null || childFiles.length == 0) {
+                return;
+            }
+            // 格式化输出目录层次结构，把上个文件的层次tag替换为空格
+            tag = tag.replaceAll(HIERARCHY_REPLACE_REGEX, HIERARCHY_BLANK)
+                    + HIERARCHY_TREE + HIERARCHY_TAG;
+            for (int index = 0; index < childFiles.length; index++) {
+                // 最后一个文件用\表示该目录结尾，但保留主目录最后一个文件的tag
+                if (index == childFiles.length - 1) {
+                    String endTag = tag.substring(0, tag.lastIndexOf(HIERARCHY_TREE))
+                            + HIERARCHY_TREE_END
+                            + tag.substring(tag.lastIndexOf(HIERARCHY_TREE) + 1);
+                    tag = endTag.contains(HIERARCHY_TREE) ? endTag : tag;
+                }
+
+                listSubFiles(childFiles[index], tag);
+            }
+        } catch (Throwable e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
+    }
+
+
+
+
+    /**
+     * 获取当前目录所有文件信息，并存入Map
      *
      * @param filePath
      */
     public static void recurseLookUp(String filePath) {
-        // key：文件路径字符串, value：文件
+        // 以(文件路径字符串, 文件)记录并标识文件信息
         Map<String, File> hierarchy = new HashMap<>();
         hierarchy.put(filePath, new File(filePath));
         // 如果文件是文件夹类型，则将子文件加入hierarchy
@@ -137,114 +192,12 @@ public class Explorer {
     public static void main(String[] args) throws IOException {
 //        recurseLookUp(filePath);
 //        showNIO();
-//        showFileSystem();
 //        walkDir();
-        searchFile();
+//        searchFile();
+        new Explorer().listFileTree(filePath);
     }
 
 
-    public static void showNIO() throws IOException {
-        // 当前使用的系统
-        System.out.println(System.getProperty("os.name"));
-        // java.nio.Paths与Path的使用
-        Path path = Paths.get("tmp", "new.txt");
-        // Path与URI转换
-        URI uri = path.toUri();
-        // 路径转换为文件，按理来说路径就是有意义的字符串，而不是文件的概念
-        File file = path.toFile();
-        System.out.println(path.toAbsolutePath().getRoot());
-        System.out.println(uri);
-        System.out.println(file.getAbsolutePath());
-
-        // 两种方式都可，对Path类中的每一个path进行拆分，注意是不包括根目录的
-        Path absPath = path.toAbsolutePath();
-        for (Path p : absPath) {
-            System.out.println(p.toAbsolutePath());
-        }
-        for (int i = 0; i < absPath.getNameCount(); i++) {
-            System.out.println(absPath.getName(i).toAbsolutePath());
-        }
-        // 以文件后缀名进行判断Path，结果是失败的
-        System.out.println("文件后缀判断结果：" + absPath.endsWith(".txt"));
-        // 以根目录来归类Path，结果正常
-        System.out.println("根目录判断结果：" + absPath.startsWith(absPath.getRoot()));
-
-        // java.nio.file.Files类
-        // 写入1000行数组
-        UUID uuid = UUID.randomUUID();
-        Random random = new Random(100);
-        byte[] bytes = new byte[1000];
-        random.nextBytes(bytes);
-        Files.write(path, bytes);
-        System.out.println("当前文件行数：" + Files.size(path));
-        // 对字节数据进行读取
-        byte[] values = Files.readAllBytes(path);
-
-        System.out.println("当前文件行数：" + Files.size(path));
-        // 直接对“小文件”进行读写
-//        List<String> lines = Files.readAllLines(path);
-//        lines.stream().filter(line -> line.startsWith("E")).map(line -> line + "直接读写").forEach(System.out::println);
-
-        // java.nio.file.Files 包括了所有nio中对于文件操作的功能
-        Files.exists(path);
-        Files.isDirectory(path);
-        Files.isHidden(path);
-        Files.size(path);
-        System.out.println(Files.getFileStore(path).name());
-        Files.getLastModifiedTime(path);
-        System.out.println(Files.probeContentType(path));
-        // 链接文件
-        if (Files.isSymbolicLink(path)) {
-            Files.isSymbolicLink(path);
-        }
-    }
-
-
-    public static void showFileSystem() {
-        System.getProperty("os.name");
-        FileSystem fs = FileSystems.getDefault();
-        for (FileStore store : fs.getFileStores()) {
-            System.out.println(store.name());
-        }
-        for (Path path : fs.getRootDirectories()) {
-            System.out.println(path.toUri());
-        }
-        fs.isOpen();
-    }
-
-
-    public static void walkDir() throws IOException {
-        Path path = Paths.get("D:\\ideaProject\\daily_improvement\\FilePractise\\src");
-        System.out.println(path.toUri());
-        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-            @Override
-            public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                Files.readAllLines(path).forEach(System.out::println);
-                return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(Path path, IOException exception) throws IOException {
-                System.out.println("+-+-+-+-+-+-+-+-+-+-+-+-" + Files.isDirectory(path) + "+-+-+-+-+-+-+-+-+-+-+-+-");
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-
-
-    public static void searchFile() throws IOException {
-        Path path = Paths.get("src");
-        System.out.println("--------->Search all java files in " + path.toUri() + "<---------");
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:**/*.java");
-        Files.walk(path)
-                .filter(new Predicate<Path>() {
-                    @Override
-                    public boolean test(Path path) {
-                        return matcher.matches(path);
-                    }
-                })
-                .forEach(System.out::println);
-    }
 }
 
 
