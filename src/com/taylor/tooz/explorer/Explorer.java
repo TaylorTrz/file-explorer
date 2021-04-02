@@ -1,7 +1,8 @@
 package com.taylor.tooz.explorer;
 
+import com.taylor.tooz.format.FormatInput;
+
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +11,7 @@ import static com.taylor.tooz.utils.HierarchyUtil.*;
 
 /**
  * *****************************************************************
- *                         file explorer
+ * file explorer
  * recurseLookUp: 获取当前目录所有文件信息
  * -----------------------------------------------------------------
  *
@@ -23,8 +24,8 @@ public class Explorer {
     private static final String RECORD_FILE = "recordFile";
     private static final String RECORD_DIR = "recordDir";
     private static final String filePath = File.listRoots()[1].getPath();
-    public static OutputStream LOG_FILE;
 
+    public static OutputStream LOG_FILE;
 
     static {
         try {
@@ -32,35 +33,102 @@ public class Explorer {
         } catch (Throwable e) {
             e.printStackTrace();
         }
-
     }
 
 
+    /**
+     * explorer
+     */
+    public void explore() {
+        Map<String, File> hierarchy = new HashMap<>();
+        hierarchy.put(filePath, new File(filePath));
+
+        while (true) {
+            String input = new Scanner(System.in).nextLine();
+            FormatInput.Command command = FormatInput.getCommand(input);
+            if (command == FormatInput.Command.COMMAND_HELP) {
+                System.out.println("help");
+                continue;
+            }
+
+            if (command == FormatInput.Command.COMMAND_READ) {
+                System.out.println("read");
+                continue;
+            }
+
+            if (command == FormatInput.Command.COMMAND_CHANGE_DIR) {
+                hierarchy = changeDirectory(hierarchy, new File(""));
+                continue;
+            }
+
+            if (command == FormatInput.Command.COMMAND_TREE) {
+                new Explorer().listFileTree(File.listRoots()[1].getPath());
+                continue;
+            }
+
+            if (command == FormatInput.Command.COMMAND_QUIT) {
+                Runtime.getRuntime().exit(0);
+                System.exit(0);
+            }
+        }
+    }
+
 
     /**
-     * 获取文件树
+     * change directory
+     */
+    private Map<String, File> changeDirectory(Map<String, File> hierarchy, File file) {
+        listFiles(hierarchy, filePath);
+        return hierarchy;
+    }
+
+
+    /**
+     * list files
+     */
+    private Map<String, File> listFiles(Map<String, File> hierarchy, File directory) {
+        if (!directory.isDirectory()) {
+            return hierarchy;
+        }
+        hierarchy = listFiles(hierarchy, filePath);
+        for (Map.Entry<String, File> entry : hierarchy.entrySet()) {
+            System.out.println(entry.getValue().getName());
+        }
+        return hierarchy;
+    }
+
+
+    /**
+     * read file
+     */
+    private void readFile(File file) {
+        getFileDetails(file);
+    }
+
+
+    /**
+     * file tree
      *
      * @param filePath
      * @return
      */
-    public void listFileTree(String filePath) {
+    private void listFileTree(String filePath) {
         System.out.println("tree " + filePath + " running on " + System.getProperty("os.name"));
         String fileSepartor = Optional.ofNullable(System.getProperty("file.separator")).orElse("\\");
-        listSubFiles(new File(filePath), "");
+        recurseFiles(new File(filePath), "");
         System.out.println("\n" + recordMap.get(RECORD_DIR) + " directories, " + recordMap.get(RECORD_FILE) + " files");
     }
 
 
-    private void listSubFiles(File file, String tag) {
+    private void recurseFiles(File file, String tag) {
         try {
             LOG_FILE.write((tag + file.getName() + "\n").getBytes());
         } catch (Throwable e) {
-            System.out.println("error");
+            System.out.println("error to open log file");
             return;
         }
 
-
-        // 记录文件与文件夹个数
+        // log files/directories number
         if (!file.isDirectory()) {
             int fileRecord = (int) Optional.ofNullable(recordMap.get(RECORD_FILE)).orElse(0);
             recordMap.put(RECORD_FILE, ++fileRecord);
@@ -74,11 +142,11 @@ public class Explorer {
             if (childFiles == null || childFiles.length == 0) {
                 return;
             }
-            // 格式化输出目录层次结构，把上个文件的层次tag替换为空格
+            // format and pretty output hierarchy
             tag = tag.replaceAll(HIERARCHY_REPLACE_REGEX, HIERARCHY_BLANK)
                     + HIERARCHY_TREE + HIERARCHY_TAG;
             for (int index = 0; index < childFiles.length; index++) {
-                // 最后一个文件用\表示该目录结尾，但保留主目录最后一个文件的tag
+                // last file in dir will tag with "\", but keep tag "|" of last file in main directory
                 if (index == childFiles.length - 1) {
                     String endTag = tag.substring(0, tag.lastIndexOf(HIERARCHY_TREE))
                             + HIERARCHY_TREE_END
@@ -86,36 +154,10 @@ public class Explorer {
                     tag = endTag.contains(HIERARCHY_TREE) ? endTag : tag;
                 }
 
-                listSubFiles(childFiles[index], tag);
+                recurseFiles(childFiles[index], tag);
             }
         } catch (Throwable e) {
             System.out.println(Arrays.toString(e.getStackTrace()));
-        }
-    }
-
-
-
-
-    /**
-     * 获取当前目录所有文件信息，并存入Map
-     *
-     * @param filePath
-     */
-    public static void recurseLookUp(String filePath) {
-        // 以(文件路径字符串, 文件)记录并标识文件信息
-        Map<String, File> hierarchy = new HashMap<>();
-        hierarchy.put(filePath, new File(filePath));
-        // 如果文件是文件夹类型，则将子文件加入hierarchy
-        hierarchy = getFiles(hierarchy, filePath);
-        // 输入为:quit，则退出
-        while (!(filePath = new Scanner(System.in).nextLine()).equals(":quit")) {
-            // 输入为:read并指定文件名，则输出文件内容
-            if (filePath.equals(":read")) {
-                getFileDetails(hierarchy.get(new Scanner(System.in).nextLine()));
-                continue;
-            }
-            // 继续循环子文件
-            hierarchy = getFiles(hierarchy, filePath);
         }
     }
 
@@ -127,25 +169,19 @@ public class Explorer {
      * @param fileName
      * @return
      */
-    private static Map<String, File> getFiles(Map<String, File> hierarchy, String fileName) {
-        File filePath = hierarchy.get(fileName);
+    private static Map<String, File> listFiles(Map<String, File> hierarchy, String fileName) {
+        File file = hierarchy.get(fileName);
         Map<String, File> newHierarchy = new HashMap<>();
-        System.out.println("★-------" + filePath.getName() + "------★");
 
-        // 如果是文件夹，则遍历获取所有子文件
-        try {
-            if (filePath.isDirectory()) {
-                File[] childFiles = filePath.listFiles();
+        if (file.isDirectory()) {
+            try {
+                File[] childFiles = file.listFiles();
                 for (File childFile : childFiles) {
-                    // 格式化输出子文件的路径
-                    System.out.println(getHierarchy(childFile) + "--" + childFile.getName());
                     newHierarchy.put(childFile.getName(), childFile);
                 }
+            } catch (Throwable e) {
+                System.out.println("deny to access file");
             }
-        } catch (Throwable e) {
-            System.out.println("deny to access! " + e);
-        } finally {
-            System.out.println("★-------" + "END OF LIST" + "------★");
         }
 
         return newHierarchy;

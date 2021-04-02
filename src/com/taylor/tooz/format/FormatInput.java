@@ -1,10 +1,5 @@
 package com.taylor.tooz.format;
 
-import com.taylor.tooz.explorer.Explorer;
-
-import java.io.File;
-import java.util.Scanner;
-
 /**
  * *****************************************************************
  * format input
@@ -17,12 +12,17 @@ import java.util.Scanner;
  */
 public class FormatInput {
     public static final String ERROR_INPUT = "输入错误！请使用help命令查看帮助文档！\n";
+    public static final String BLANK_INPUT = "[ ]";
 
     public enum Command {
-        COMMAND_QUIT("q", "quit"),
-        COMMAND_READ("r", "read"),
+        COMMAND_QUIT("exit", "quit"),
+        COMMAND_READ("cat", "read"),
         COMMAND_TREE("tree", "tree"),
-        COMMAND_HELP("h", "help");
+        COMMAND_FIND("find", "find"),
+        COMMAND_REMOVE("rm", "remove"),
+        COMMAND_CHANGE_DIR("cd", "change"),
+        COMMAND_SHOW_DIR("ls", "dir"),
+        COMMAND_HELP("man", "help");
 
         private String abbreviation;
         private String full;
@@ -47,15 +47,13 @@ public class FormatInput {
      *
      * @return
      */
-    public Command getInput() {
-        String input = new Scanner(System.in).nextLine();
-
+    public static Command getCommand(String input) {
         for (Command cmd : Command.values()) {
-            if (input.equals(cmd.getAbbreviation()) || input.equals(cmd.getFull()))
+            if (input.split(BLANK_INPUT)[0].equals(cmd.getAbbreviation())
+                    || input.split(BLANK_INPUT)[0].equals(cmd.getFull()))
                 return cmd;
         }
-        System.out.println(ERROR_INPUT);
-        return getInput();
+        return Command.COMMAND_HELP;
     }
 
 
