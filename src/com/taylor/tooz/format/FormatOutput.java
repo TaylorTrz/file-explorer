@@ -1,10 +1,19 @@
 package com.taylor.tooz.format;
 
+import com.taylor.tooz.explorer.DoubleKiller;
+import com.taylor.tooz.explorer.Explorer;
+
+import java.io.File;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
+
+import static com.taylor.tooz.explorer.Explorer.RECORD_CURRENT;
 
 /**
  * *****************************************************************
- *                       format output
+ * format output
  * showWelcomeScreen: 展示欢迎界面
  * -----------------------------------------------------------------
  *
@@ -13,34 +22,44 @@ import java.io.IOException;
  * *****************************************************************
  */
 public class FormatOutput {
-    public static final String FORMAT_ASTERISK = "****************************************";
-    public static final String FORMAT_PLUS = "++++++++++++++++++++++++++++++++++++++++";
-    public static final String FORMAT_DASH = "-----------------------------------------";
-    public static final String LINE_END = "\n";
-    public static final String FUNCTION_1 = "1.  文件系统目录";
-    public static final String FUNCTION_2 = "2.  重复文件查杀器";
-    public static final String FUNCTION_3 = "3.  帮助手册";
-    public static final String ERROR_OUTPUT = "请选择对应的数字，回车确认选择！";
+    public static final String FORMAT_ASTERISK = "**************************************************";
+    public static final String FORMAT_DASH = "--------------------------------------------------";
+    public static final String LINE_START = "\t\t|";
+    public static final String LINE_START_1 = "\t\t/";
+    public static final String LINE_START_2 = "\t\t\\";
+    public static final String LINE_END = "|\n";
+    public static final String LINE_END_1 = "\\\n";
+    public static final String LINE_END_2 = "/\n";
+    public static final String LEFT_SLASH = "/";
+    public static final String RIGHT_SLASH = "\\";
+    public static final String VERSION = String.format("%10s%-40s", " ", "file-explorer v1.0 by taoruizhe");
+    public static final String FUNCTION_1 = String.format("%15s%-35s", " ", "1.  file-explorer");
+    public static final String FUNCTION_2 = String.format("%15s%-35s", " ", "2.  double-killer");
+    public static final String FUNCTION_3 = String.format("%15s%-35s", " ", "3.  help manual");
+    public static final String FUNCTION_4 = String.format("%15s%-35s", " ", "4.  exit");
+    public static final String ERROR_OUTPUT = "请按照功能选择对应的数字，回车确认选择！";
 
 
     /**
-     * 欢迎界面
+     * welcome screen
      */
-    public static void showWelcomeScreen() {
-        String welcomeScreen = FORMAT_PLUS + LINE_END
-                + FORMAT_DASH + LINE_END
-                + FUNCTION_1 + LINE_END
-                + FUNCTION_2 + LINE_END
-                + FUNCTION_3 + LINE_END
-                + ERROR_OUTPUT + LINE_END
-                + FORMAT_DASH + LINE_END
-                + FORMAT_PLUS;
-        System.out.println(welcomeScreen);
+    public static String welcomeScreen;
+
+    static {
+        welcomeScreen = LINE_START_1 + FORMAT_DASH + LINE_END_1
+                + LINE_START + VERSION + LINE_END
+                + LINE_START + FORMAT_DASH + LINE_END
+                + LINE_START + FUNCTION_1 + LINE_END
+                + LINE_START + FUNCTION_2 + LINE_END
+                + LINE_START + FUNCTION_3 + LINE_END
+                + LINE_START + FUNCTION_4 + LINE_END
+                + LINE_START_2 + FORMAT_DASH + LINE_END_2
+                + ERROR_OUTPUT;
     }
 
 
     /**
-     * 启动界面
+     * initial screen
      */
     public static void initialScreen() {
         StringBuilder mode = new StringBuilder("\b\b");
@@ -65,15 +84,20 @@ public class FormatOutput {
     }
 
 
-    public static void main(String[] args) {
-        initialScreen();
-        showWelcomeScreen();
+    /**
+     * format output
+     *
+     * @param output
+     * @return
+     */
+    public static void log(String output) {
+        File currentFile = Optional.ofNullable((File) Explorer.hierarchy.get(RECORD_CURRENT)).orElse(new File("/"));
+        String currentFilePath = currentFile.getAbsolutePath();
+        System.out.printf("taylor@file-explorer:%s$ %s\n", currentFilePath, output);
+    }
 
-        try {
-            Runtime.getRuntime().exec("ipconfig /all");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+    public static void main(String[] args) {
     }
 
 }

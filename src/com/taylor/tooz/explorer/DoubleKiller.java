@@ -24,7 +24,7 @@ import java.util.Map;
 public class DoubleKiller {
     private static final File ROOT_FILE = new File(File.listRoots()[0].toString());
 
-    private static final File LOG_FILE = new File("/tmp/Duplicated_Files");
+    private static final File LOG_FILE = new File(ROOT_FILE.getPath() + "/tmp/Duplicated_Files");
 
     private Map<String, List<File>> duplicateFiles = new HashMap<>();
 

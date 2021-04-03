@@ -1,6 +1,7 @@
 package com.taylor.tooz.utils;
 
 import java.io.File;
+import java.util.Optional;
 
 /**
  * *****************************************************************
@@ -13,6 +14,7 @@ import java.io.File;
  * *****************************************************************
  */
 public class HierarchyUtil {
+    public static final String fileSepartor = Optional.ofNullable(System.getProperty("file.separator")).orElse("\\");
     public static final String HIERARCHY_REPLACE_REGEX = "[-\\\\]";
     public static final String HIERARCHY_TAG = "--";
     public static final String HIERARCHY_BLANK = " ";
