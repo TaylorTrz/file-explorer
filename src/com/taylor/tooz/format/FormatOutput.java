@@ -1,13 +1,11 @@
 package com.taylor.tooz.format;
 
-import com.taylor.tooz.explorer.DoubleKiller;
 import com.taylor.tooz.explorer.Explorer;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Map;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Scanner;
 
 import static com.taylor.tooz.explorer.Explorer.RECORD_CURRENT;
 
@@ -44,6 +42,7 @@ public class FormatOutput {
      * welcome screen
      */
     public static String welcomeScreen;
+    public static StringBuilder helpManual = new StringBuilder();
 
     static {
         welcomeScreen = LINE_START_1 + FORMAT_DASH + LINE_END_1
@@ -55,6 +54,13 @@ public class FormatOutput {
                 + LINE_START + FUNCTION_4 + LINE_END
                 + LINE_START_2 + FORMAT_DASH + LINE_END_2
                 + ERROR_OUTPUT;
+
+        try {
+            Files.readAllLines(Path.of("resources/help-manual")).forEach((output) -> helpManual.append(output).append("\n"));
+        } catch (Throwable e) {
+            System.out.println("failed to load help manual file! " + e.getMessage());
+        }
+
     }
 
 
