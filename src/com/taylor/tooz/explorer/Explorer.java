@@ -165,7 +165,7 @@ public class Explorer {
             // return to parent directory
             if ("..".equals(inputArray[1])) {
                 File currentDir = (File) hierarchy.get(RECORD_CURRENT);
-                dirPath = currentDir.getParentFile().getAbsolutePath();
+                dirPath = Optional.ofNullable(currentDir.getParentFile()).orElse(currentDir).getAbsolutePath();
             }
             // absolute path
             else if (inputArray[1].contains(fileSepartor)) {
