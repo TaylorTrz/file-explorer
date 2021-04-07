@@ -56,7 +56,7 @@ public class FormatOutput {
                 + ERROR_OUTPUT;
 
         try {
-            Files.readAllLines(Path.of("resources/help-manual")).forEach((output) -> helpManual.append(output).append("\n"));
+            Files.readAllLines(Path.of("src/com/taylor/tooz/format/help-manual")).forEach((output) -> helpManual.append(output).append("\n"));
         } catch (Throwable e) {
             System.out.println("failed to load help manual file! " + e.getMessage());
         }
@@ -102,8 +102,5 @@ public class FormatOutput {
         System.out.printf("taylor@file-explorer:%s$ %s\n", currentFilePath, output);
     }
 
-
-    public static void main(String[] args) {
-    }
 
 }

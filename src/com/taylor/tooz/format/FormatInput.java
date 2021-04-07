@@ -78,9 +78,4 @@ public class FormatInput {
         return new Scanner(System.in).nextLine();
     }
 
-    public static void main(String[] args) {
-        while (true) {
-            input();
-        }
-    }
 }

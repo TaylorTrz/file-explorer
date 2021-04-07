@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="file-explorer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/file_explorer_jar</output-path>
+    <root id="archive" name="file-explorer.jar">
+      <element id="module-output" name="file-explorer" />
+    </root>
+  </artifact>
+</component>
