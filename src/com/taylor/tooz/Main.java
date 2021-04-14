@@ -1,6 +1,6 @@
 package com.taylor.tooz;
 
-import com.taylor.tooz.explorer.DoubleKiller;
+import com.taylor.tooz.killer.DoubleKiller;
 import com.taylor.tooz.explorer.Explorer;
 import java.util.Scanner;
 

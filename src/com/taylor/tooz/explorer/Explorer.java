@@ -1,6 +1,5 @@
 package com.taylor.tooz.explorer;
 
-import com.sun.jdi.IntegerType;
 import com.taylor.tooz.format.FormatInput;
 import com.taylor.tooz.format.FormatOutput;
 
@@ -8,6 +7,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -224,14 +224,14 @@ public class Explorer {
                 File file = (File) entry.getValue();
                 String name = ("".equals(file.getName()) ? file.getPath() : file.getName());
                 try {
-                    long size = Files.size(Path.of(file.getAbsolutePath()));
+                    long size = Files.size(Paths.get(file.getAbsolutePath()));
                     if (file.isDirectory()) {
-                        size = Files.size(Path.of(file.getAbsolutePath()));
+                        size = Files.size(Paths.get(file.getAbsolutePath()));
                     }
 
                     String index = entry.getKey();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    long millis = Files.getLastModifiedTime(Path.of(file.getAbsolutePath())).toMillis();
+                    long millis = Files.getLastModifiedTime(Paths.get(file.getAbsolutePath())).toMillis();
                     LocalDateTime lastModifiedTime = LocalDateTime.ofInstant(new Date(millis).toInstant(), ZoneId.of("Asia/Shanghai"));
                     System.out.println(String.format("%-5s\t%-10s\t%-20s\t%-20s\t",
                             index, size, lastModifiedTime.format(formatter), name));

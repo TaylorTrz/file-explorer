@@ -5,6 +5,7 @@ import com.taylor.tooz.explorer.Explorer;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import static com.taylor.tooz.explorer.Explorer.RECORD_CURRENT;
@@ -56,7 +57,7 @@ public class FormatOutput {
                 + ERROR_OUTPUT;
 
         try {
-            Files.readAllLines(Path.of("src/com/taylor/tooz/format/help-manual")).forEach((output) -> helpManual.append(output).append("\n"));
+            Files.readAllLines(Paths.get("src/com/taylor/tooz/format/help-manual")).forEach((output) -> helpManual.append(output).append("\n"));
         } catch (Throwable e) {
             System.out.println("failed to load help manual file! " + e.getMessage());
         }
