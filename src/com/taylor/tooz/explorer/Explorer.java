@@ -62,6 +62,9 @@ public class Explorer {
     public void start() {
         while (true) {
             String input = FormatInput.input();
+            if (input.isEmpty()) {
+               continue;
+            }
             FormatInput.Command command = FormatInput.getCommand(input);
 
             if (command == FormatInput.Command.READ) {
