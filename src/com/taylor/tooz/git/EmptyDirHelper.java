@@ -9,18 +9,17 @@ import java.util.Scanner;
 
 /**
  * *****************************************************************
- * Helper to log empty directories in git
+ * <p/>Helper to log empty directories in git<p/>
  * -----------------------------------------------------------------
- * See help reference in 3-git-helper-man
- * <p>
- * -----------------------------------------------------------------
+ * <p/>See help reference in 3-git-helper-man<p/>
  *
+ * *****************************************************************
  * @author taoruizhe
  * @since 2022/01/16
- * *****************************************************************
  */
 public class EmptyDirHelper {
     private static final String GIT_KEEP_FILENAME = ".gitkeep";
+    private static final String GIT_DIR = ".git";
 
 
     /**
@@ -79,23 +78,35 @@ public class EmptyDirHelper {
 
         Files.walkFileTree(dirPath, new SimpleFileVisitor<Path>() {
             @Override
+            public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes attrs) throws IOException {
+                if (!Files.isDirectory(path)) {
+                    return FileVisitResult.CONTINUE;
+                }
+                // if dir is .git, just ignore it and its sub dirs
+                for (Path subPath : path) {
+                    if (GIT_DIR.equals(subPath.getFileName().toString())) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                File dir = path.toFile();
+                File[] subFiles = dir.listFiles();
+                if (subFiles == null || subFiles.length == 0) {
+                    // add .gitkeep file to empty dir
+                    String gkAbsPath = Paths.get(path.toString(), GIT_KEEP_FILENAME)
+                            .toString();
+                    System.out.printf("add .gitkeep file %s \n", gkAbsPath);
+                    Files.createFile(Paths.get(gkAbsPath));
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
             public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
             public FileVisitResult postVisitDirectory(Path path, IOException ioe) throws IOException {
-                if (Files.isDirectory(path)) {
-                    File dir = path.toFile();
-                    File[] subFiles = dir.listFiles();
-                    if (subFiles == null || subFiles.length == 0) {
-                        // add .gitkeep file
-                        String gkAbsPath = Paths.get(path.toString(), GIT_KEEP_FILENAME)
-                                .toString();
-                        System.out.printf("add .gitkeep file %s \n", gkAbsPath);
-                        Files.createFile(Paths.get(gkAbsPath));
-                    }
-                }
                 return FileVisitResult.CONTINUE;
             }
 
