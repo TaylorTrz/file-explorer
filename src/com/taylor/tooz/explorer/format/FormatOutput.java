@@ -1,16 +1,12 @@
-package com.taylor.tooz.format;
+package com.taylor.tooz.explorer.format;
 
 import com.taylor.tooz.Main;
 import com.taylor.tooz.explorer.Explorer;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;

@@ -1,10 +1,11 @@
 package com.taylor.tooz;
 
+import com.taylor.tooz.git.EmptyDirHelper;
 import com.taylor.tooz.killer.DoubleKiller;
 import com.taylor.tooz.explorer.Explorer;
 import java.util.Scanner;
 
-import static com.taylor.tooz.format.FormatOutput.welcomeScreen;
+import static com.taylor.tooz.explorer.format.FormatOutput.welcomeScreen;
 
 public class Main {
 
@@ -26,7 +27,8 @@ public class Main {
                 continue;
             }
             if ("3".equals(input)) {
-                System.out.println("帮助手册");
+                System.out.println("git helper");
+                new EmptyDirHelper().start();
                 continue;
             }
             if ("4".equals(input)) {

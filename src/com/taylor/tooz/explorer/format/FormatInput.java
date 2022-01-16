@@ -1,4 +1,4 @@
-package com.taylor.tooz.format;
+package com.taylor.tooz.explorer.format;
 
 import com.taylor.tooz.explorer.Explorer;
 

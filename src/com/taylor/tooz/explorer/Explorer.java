@@ -1,12 +1,11 @@
 package com.taylor.tooz.explorer;
 
-import com.taylor.tooz.format.FormatInput;
-import com.taylor.tooz.format.FormatOutput;
+import com.taylor.tooz.explorer.format.FormatInput;
+import com.taylor.tooz.explorer.format.FormatOutput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -49,7 +48,8 @@ public class Explorer {
 
         // open log file, windows for D:\tmp, linux for /tmp
         try {
-            LOG_FILE = new FileOutputStream(File.listRoots()[1].getPath() + "/tmp");
+            // Add by taylor 2021.01.16: Close log as default behavior
+            // LOG_FILE = new FileOutputStream(File.listRoots()[1].getPath() + "/tmp");
         } catch (Throwable e) {
             e.printStackTrace();
         }
