@@ -26,10 +26,14 @@ public class DocFormatUtil {
     private static final String VERTICAL = "|";
     private static final String LF = "\n";
 
-    private int width = 0;
-    private int height = 100;
+    private int width = 8;
+    private int height = 10;
+    /*  cache string for each line */
     private StringBuilder cacheStr;
+    /*  all content in an array */
     private String[] content;
+    /*  pointer for context index */
+    private int ptr = 0;
 
     public DocBuilder format(int width, int height) {
         if (width != 0) {
@@ -56,10 +60,10 @@ public class DocFormatUtil {
             if (content == null) {
                 content = new String[height];
             }
-            if (content.length >= height) {
-                height = height << 1;
+            if (++ptr >= height) {
+                height = height + (1 << 4);
                 String[] nContent = new String[height];
-                nContent = content.clone();
+                System.arraycopy(content, 0, nContent, 0, content.length);
                 content = nContent;
             }
             // flush cached string
@@ -99,13 +103,13 @@ public class DocFormatUtil {
                     .append(repeatStr(DASH, width))
                     .append(VERTICAL)
                     .append(LF);
-            for (int c = 0; c < content.length; c++) {
-                if (content[c] == null || content[c].isEmpty()) {
+            for (String s : content) {
+                if (s == null || s.isEmpty()) {
                     break;
                 }
                 doc.append(VERTICAL)
-                        .append(content[c])
-                        .append(repeatStr(" ", width - content[c].length()))
+                        .append(s)
+                        .append(repeatStr(" ", width - s.length()))
                         .append(VERTICAL).append(LF);
             }
             doc.append(VERTICAL)
@@ -122,7 +126,7 @@ public class DocFormatUtil {
                 format(0, 0)
                 .then("abc").then("ufo").enter()
                 .then("uvf").then("good").enter()
-                .then("looooooooooooooooooooooooooooooooooooooooooooooog")
+                .then("loooooooooooooooooooooooooooooooooooooooooooo0000000000000000000000000ooog")
                 .build());
     }
 }
