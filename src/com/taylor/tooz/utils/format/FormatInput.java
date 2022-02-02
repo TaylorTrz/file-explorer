@@ -1,4 +1,4 @@
-package com.taylor.tooz.explorer.format;
+package com.taylor.tooz.utils.format;
 
 import com.taylor.tooz.explorer.Explorer;
 
@@ -74,7 +74,7 @@ public class FormatInput {
     public static String input() {
         File currentFile = Optional.ofNullable((File) Explorer.hierarchy.get(RECORD_CURRENT)).orElse(new File("/"));
         String currentFilePath = currentFile.getAbsolutePath();
-        System.out.printf("taylor@file-explorer:%s$ ", currentFilePath);
+        System.out.printf("taylor@file-explorer#%s$ ", currentFilePath);
         return new Scanner(System.in).nextLine();
     }
 

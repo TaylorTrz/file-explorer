@@ -1,4 +1,4 @@
-package com.taylor.tooz.utils;
+package com.taylor.tooz.utils.format;
 
 
 /**
@@ -35,7 +35,11 @@ public class DocFormatUtil {
     /*  pointer for context index */
     private int ptr = 0;
 
-    public DocBuilder format(int width, int height) {
+    public DocBuilder getBuilder() {
+        return getBuilder(0, 0);
+    }
+
+    public DocBuilder getBuilder(int width, int height) {
         if (width != 0) {
             this.width = width;
         }
@@ -46,7 +50,7 @@ public class DocFormatUtil {
         return new DocBuilder();
     }
 
-    class DocBuilder {
+    public class DocBuilder {
         public DocBuilder then(Object o) {
             if (cacheStr == null) {
                 cacheStr = new StringBuilder();
@@ -123,7 +127,7 @@ public class DocFormatUtil {
 
     public static void main(String[] args) {
         System.out.println(new DocFormatUtil().
-                format(0, 0)
+                getBuilder(0, 0)
                 .then("abc").then("ufo").enter()
                 .then("uvf").then("good").enter()
                 .then("loooooooooooooooooooooooooooooooooooooooooooo0000000000000000000000000ooog")

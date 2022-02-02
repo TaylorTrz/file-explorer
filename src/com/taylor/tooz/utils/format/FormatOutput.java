@@ -1,4 +1,4 @@
-package com.taylor.tooz.explorer.format;
+package com.taylor.tooz.utils.format;
 
 import com.taylor.tooz.Main;
 import com.taylor.tooz.explorer.Explorer;
@@ -24,16 +24,6 @@ import static com.taylor.tooz.explorer.Explorer.RECORD_CURRENT;
  * *****************************************************************
  */
 public class FormatOutput {
-    public static final String FORMAT_ASTERISK = "**************************************************";
-    public static final String FORMAT_DASH = "--------------------------------------------------";
-    public static final String LINE_START = "\t\t|";
-    public static final String LINE_START_1 = "\t\t/";
-    public static final String LINE_START_2 = "\t\t\\";
-    public static final String LINE_END = "|\n";
-    public static final String LINE_END_1 = "\\\n";
-    public static final String LINE_END_2 = "/\n";
-    public static final String LEFT_SLASH = "/";
-    public static final String RIGHT_SLASH = "\\";
     public static final String VERSION = String.format("%10s%-40s", " ", "file-explorer v1.0 by taoruizhe");
     public static final String FUNCTION_1 = String.format("%15s%-35s", " ", "1.  file-explorer");
     public static final String FUNCTION_2 = String.format("%15s%-35s", " ", "2.  double-killer");
@@ -41,24 +31,10 @@ public class FormatOutput {
     public static final String FUNCTION_4 = String.format("%15s%-35s", " ", "4.  exit");
     public static final String ERROR_OUTPUT = "请按照功能选择对应的数字，回车确认选择！";
 
-
-    /**
-     * welcome screen
-     */
-    public static String welcomeScreen = "";
     public static String helpManual = "";
     public static String HELP_MANUAL_FILE = "resources/help-manual";
 
     static {
-        welcomeScreen = LINE_START_1 + FORMAT_DASH + LINE_END_1
-                + LINE_START + VERSION + LINE_END
-                + LINE_START + FORMAT_DASH + LINE_END
-                + LINE_START + FUNCTION_1 + LINE_END
-                + LINE_START + FUNCTION_2 + LINE_END
-                + LINE_START + FUNCTION_3 + LINE_END
-                + LINE_START + FUNCTION_4 + LINE_END
-                + LINE_START_2 + FORMAT_DASH + LINE_END_2
-                + ERROR_OUTPUT;
 
         StringBuilder contentBuilder = new StringBuilder(helpManual);
         try {
@@ -98,6 +74,7 @@ public class FormatOutput {
     }
 
 
+
     /**
      * initial screen
      */
@@ -130,10 +107,10 @@ public class FormatOutput {
      * @param output
      * @return
      */
-    public static void log(String output) {
+    public static void output(String output) {
         File currentFile = Optional.ofNullable((File) Explorer.hierarchy.get(RECORD_CURRENT)).orElse(new File("/"));
         String currentFilePath = currentFile.getAbsolutePath();
-        System.out.printf("taylor@file-explorer:%s$ %s\n", currentFilePath, output);
+        System.out.printf("taylor@file-explorer#%s$ %s\n", currentFilePath, output);
     }
 
 

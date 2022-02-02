@@ -14,7 +14,7 @@ import java.util.Optional;
  * *****************************************************************
  */
 public class HierarchyUtil {
-    public static final String fileSepartor = Optional.ofNullable(System.getProperty("file.separator")).orElse("\\");
+    public static final String fileSeparator = Optional.ofNullable(System.getProperty("file.separator")).orElse("\\");
     public static final String HIERARCHY_REPLACE_REGEX = "[-\\\\]";
     public static final String HIERARCHY_TAG = "--";
     public static final String HIERARCHY_BLANK = " ";

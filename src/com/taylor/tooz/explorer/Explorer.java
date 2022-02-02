@@ -1,7 +1,7 @@
 package com.taylor.tooz.explorer;
 
-import com.taylor.tooz.explorer.format.FormatInput;
-import com.taylor.tooz.explorer.format.FormatOutput;
+import com.taylor.tooz.utils.format.FormatInput;
+import com.taylor.tooz.utils.format.FormatOutput;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -14,6 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.taylor.tooz.utils.HierarchyUtil.*;
+import static com.taylor.tooz.utils.LogUtil.log;
 
 
 /**
@@ -33,25 +34,17 @@ public class Explorer {
     public static final String RECORD_CURRENT = "recordCurrent";
     private static final String filePath = File.listRoots()[0].getPath();
 
-    public static OutputStream LOG_FILE;
-
     static {
-        // put C:\ or / as default root dir
+        /*
+         *  Windows has multi root dir, such as C:\ D:\ ...
+         *  Linux has single root dir as /
+         *  put C:\ or / as default root dir
+         */
         hierarchy.put(RECORD_CURRENT, new File(filePath));
-
-        // windows has multi root dir, differ from linux / root dir
         int index = 0;
         for (File rootDir : File.listRoots()) {
             hierarchy.put(String.valueOf(index), rootDir);
             index++;
-        }
-
-        // open log file, windows for D:\tmp, linux for /tmp
-        try {
-            // Add by taylor 2021.01.16: Close log as default behavior
-            // LOG_FILE = new FileOutputStream(File.listRoots()[1].getPath() + "/tmp");
-        } catch (Throwable e) {
-            e.printStackTrace();
         }
     }
 
@@ -63,7 +56,7 @@ public class Explorer {
         while (true) {
             String input = FormatInput.input();
             if (input.isEmpty()) {
-               continue;
+                continue;
             }
             FormatInput.Command command = FormatInput.getCommand(input);
 
@@ -134,7 +127,7 @@ public class Explorer {
             if (command == FormatInput.Command.QUIT) {
                 try {
                     System.out.println("exit file-explorer!");
-                    LOG_FILE.close();
+                    log.close();
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -171,12 +164,12 @@ public class Explorer {
                 dirPath = Optional.ofNullable(currentDir.getParentFile()).orElse(currentDir).getAbsolutePath();
             }
             // absolute path
-            else if (inputArray[1].contains(fileSepartor)) {
+            else if (inputArray[1].contains(fileSeparator)) {
                 dirPath = inputArray[1];
             }
             // relative path
-            else if (!inputArray[1].contains(fileSepartor)) {
-                dirPath = ((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSepartor + inputArray[1];
+            else if (!inputArray[1].contains(fileSeparator)) {
+                dirPath = ((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSeparator + inputArray[1];
                 // path based on index
                 if (inputArray[1].charAt(0) >= '0' && inputArray[1].charAt(0) <= '9') {
                     dirPath = ((File) hierarchy.get(inputArray[1])).getAbsolutePath();
@@ -252,7 +245,7 @@ public class Explorer {
      */
     private void readFile(String input) {
         File file = new File(((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath()
-                + fileSepartor
+                + fileSeparator
                 + input.split(FormatInput.BLANK_INPUT)[1]);
         try {
             InputStream stream = new FileInputStream(file);
@@ -274,7 +267,7 @@ public class Explorer {
      */
     private void editFile(String input) {
         File file = new File(((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath()
-                + fileSepartor
+                + fileSeparator
                 + input.split(FormatInput.BLANK_INPUT)[1]);
 
         if (!file.exists() || file.isDirectory()) {
@@ -305,7 +298,7 @@ public class Explorer {
                 outputStream.write((input + "\n").getBytes(StandardCharsets.UTF_8));
             }
         } catch (Throwable e) {
-            FormatOutput.log(e.getMessage());
+            FormatOutput.output(e.getMessage());
         }
 
     }
@@ -372,7 +365,7 @@ public class Explorer {
      */
     public void remove(String input) {
         String fileName = input.split(FormatInput.BLANK_INPUT)[1];
-        File file = new File(((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSepartor + fileName);
+        File file = new File(((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSeparator + fileName);
 
         if (!file.exists()) {
             System.out.println(String.format("file/dir %s not exist!", file.getAbsolutePath()));
@@ -398,7 +391,7 @@ public class Explorer {
      */
     public void createFile(String input) {
         String fileName = input.split(FormatInput.BLANK_INPUT)[1];
-        String absolutePath = ((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSepartor + fileName;
+        String absolutePath = ((File) hierarchy.get(RECORD_CURRENT)).getAbsolutePath() + fileSeparator + fileName;
         File file = new File(absolutePath);
         if (file.exists()) {
             System.out.println(String.format("current file %s already exist!", absolutePath));
@@ -428,7 +421,7 @@ public class Explorer {
         try {
             dir.mkdir();
         } catch (Throwable e) {
-            FormatOutput.log(e.getMessage());
+            FormatOutput.output(e.getMessage());
         }
 
     }
@@ -449,7 +442,7 @@ public class Explorer {
 
     private void recurseFiles(File file, String tag) {
         try {
-            LOG_FILE.write((tag + file.getName() + "\n").getBytes());
+            log.write((tag + file.getName() + "\n").getBytes());
         } catch (Throwable e) {
             System.out.println("error to open log file");
             return;
