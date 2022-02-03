@@ -15,7 +15,7 @@ import java.util.List;
  * @since 2022/2/2 10:00
  */
 public class ReadHelper {
-    private static final String CLASS_FILE = "xxout/production/file-explorer/com/taylor/tooz/Main.class";
+    private static final String CLASS_FILE = "out/production/file-explorer/com/taylor/tooz/Main.class";
 
     public void start() {
         InputStream iStream = getInputStream(CLASS_FILE);

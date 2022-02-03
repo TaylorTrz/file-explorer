@@ -81,6 +81,9 @@ public class LogUtil {
         // write msg to console
         console.println(msg);
         // write log to file
+        if (!LOG_SWITCH) {
+            return;
+        }
         String fullLog = String.format(LOG_PATTERN,
                 DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(LocalDateTime.now()),
                 Thread.currentThread().getName(), level, msg);
