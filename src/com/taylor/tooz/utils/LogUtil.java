@@ -5,6 +5,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,9 @@ public class LogUtil {
     /* [date] [thread] [info]: log something here */
     private static final String LOG_PATTERN = "[%s]  [%s]  [%s]:  %s";
 
-    private static final PrintWriter console = new PrintWriter(System.out);
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+
+    private static final PrintStream console = System.out;
 
 
     static {
@@ -44,38 +47,48 @@ public class LogUtil {
     }
 
 
-    public static void debug(Object msg) {
-        log("debug", msg);
+    public static void debug(Object... args) {
+        log("debug", args);
     }
 
 
-    public static void info(Object msg) {
-        log("info", msg);
+    public static void info(Object... args) {
+        log("info", args);
     }
 
 
-    public static void warn(Object msg) {
-        log("warn", msg);
+    public static void warn(Object... args) {
+        log("warn", args);
     }
 
 
-    public static void error(Object msg) {
-        log("error", msg);
+    public static void error(Object... args) {
+        log("error", args);
     }
 
 
-    private static void log(String level, Object msg) {
+    private static void log(String level, Object... args) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(args[0] == null ? "null" : (String) args[0]);
+        // print stack trace
+        if (args.length == 2 && args[1] instanceof Throwable) {
+            Exception e = (Exception) args[1];
+            msg.append("\n");
+            for (StackTraceElement traceElement: e.getStackTrace()) {
+                msg.append("\tat ").append(traceElement.toString()).append("\n");
+            }
+        }
+        // write msg to console
         console.println(msg);
-        String fullLog = String.format(LOG_PATTERN,
-                LocalDateTime.now(),
-                Thread.currentThread(),
-                level,
-                msg);
         // write log to file
+        String fullLog = String.format(LOG_PATTERN,
+                DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(LocalDateTime.now()),
+                Thread.currentThread().getName(), level, msg);
         try {
             log.write(fullLog.getBytes(StandardCharsets.UTF_8));
         } catch (Exception e) {
-            info(e.getStackTrace());
+            info(e.getMessage(), e);
         }
+
     }
 }

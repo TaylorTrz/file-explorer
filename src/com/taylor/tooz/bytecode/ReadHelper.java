@@ -6,8 +6,6 @@ import com.taylor.tooz.utils.format.DocFormatUtil;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
 
 /**
@@ -17,7 +15,7 @@ import java.util.stream.Stream;
  * @since 2022/2/2 10:00
  */
 public class ReadHelper {
-    private static final String CLASS_FILE = "out/production/file-explorer/com/taylor/tooz/Main.class";
+    private static final String CLASS_FILE = "xxout/production/file-explorer/com/taylor/tooz/Main.class";
 
     public void start() {
         InputStream iStream = getInputStream(CLASS_FILE);
@@ -37,7 +35,7 @@ public class ReadHelper {
             File classFile = new File(CLASS_FILE);
             iStream = new BufferedInputStream(new FileInputStream(classFile));
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            LogUtil.error(ioe.getMessage(), ioe);
         }
         return iStream;
     }
@@ -60,7 +58,7 @@ public class ReadHelper {
                 sBuffer.add(buffers);
             }
         } catch (IOException ioe) {
-            ioe.printStackTrace();
+            LogUtil.error(ioe.getMessage(), ioe);
         }
         return sBuffer;
     }

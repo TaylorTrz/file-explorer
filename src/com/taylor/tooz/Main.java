@@ -1,5 +1,6 @@
 package com.taylor.tooz;
 
+import com.taylor.tooz.utils.LogUtil;
 import com.taylor.tooz.utils.format.DocFormatUtil;
 
 import java.lang.reflect.Method;
@@ -47,7 +48,7 @@ public class Main {
                 Method method = clazz.getDeclaredMethod(mName);
                 method.invoke(clazz.getDeclaredConstructor().newInstance());
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error(e.getMessage(), e);
             }
         }
     }
