@@ -24,7 +24,7 @@ public class LogUtil {
     private static final String LOG_NAME = ".tzfs.log";
 
     /* [date] [thread] [info]: log something here */
-    private static final String LOG_PATTERN = "[%s]  [%s]  [%s]:  %s";
+    private static final String LOG_PATTERN = "%s  %s  %s:  %s\n";
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
@@ -86,9 +86,10 @@ public class LogUtil {
         }
         String fullLog = String.format(LOG_PATTERN,
                 DateTimeFormatter.ofPattern(DATE_TIME_PATTERN).format(LocalDateTime.now()),
-                Thread.currentThread().getName(), level, msg);
+                Thread.currentThread(), level, msg);
         try {
             log.write(fullLog.getBytes(StandardCharsets.UTF_8));
+            log.flush();
         } catch (Exception e) {
             info(e.getMessage(), e);
         }

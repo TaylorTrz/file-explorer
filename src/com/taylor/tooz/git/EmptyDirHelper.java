@@ -1,5 +1,7 @@
 package com.taylor.tooz.git;
 
+import com.taylor.tooz.utils.LogUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -40,9 +42,10 @@ public class EmptyDirHelper {
                 break;
             } else {
                 Path dirPath = Paths.get(in);
+                LogUtil.info(String.format("Starting recursive dir %s to add .gitkeep", dirPath));
                 try {
                     if (!Files.exists(dirPath)) {
-                        System.out.printf("dirPath %s not exist!\n", dirPath);
+                        LogUtil.error(String.format("dirPath %s not exist!\n", dirPath));
                         continue;
                     }
                     addKeepToDir(dirPath);
